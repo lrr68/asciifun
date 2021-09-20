@@ -1,8 +1,12 @@
 #include <stdlib.h>
 
+#include "./pixel.h"
+
 struct Snake{
 	int size;
 	int dead;
+	Pixel head;
+	Pixel tail;
 };
 
 int
@@ -34,5 +38,6 @@ new_snake(int size)
 {
 	struct Snake *s = malloc(sizeof(struct Snake));
 	snake_set_size(s, size);
+	snake_set_head(*(new_pixel(0,0)));
 	return s;
 }
