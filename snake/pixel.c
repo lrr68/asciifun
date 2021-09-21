@@ -31,3 +31,15 @@ pixel_get_y(struct Pixel *p)
 {
 	return p->y;
 }
+
+void
+pixel_set_x(struct Pixel *p, int x)
+{
+	p->x = x;
+}
+
+void
+pixel_set_y(struct Pixel *p, int y)
+{
+	p->y = y;
+}
