@@ -13,6 +13,7 @@ typedef enum {
 	COUNT_DIR,
 } Direction;
 
+void destroy_snake(struct Snake *s);
 int snake_is_dead(struct Snake *s, Board *b);
 int snake_get_size(struct Snake *s);
 void snake_set_size(struct Snake *s, int size);

@@ -5,9 +5,6 @@
 #include "./board.h"
 #include "./snake.h"
 
-/*
- * TODO: Implement snake body as a linked list of pixels
- */
 struct Snake{
 	int size;
 	int dead;
