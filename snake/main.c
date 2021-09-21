@@ -12,7 +12,7 @@
 #include "./board.h"
 #include "./snake.h"
 
-#define FPS 6
+#define FPS 15
 #define CURSOR_TO_TOP      "\x1b[%dA"
 #define CURSOR_TO_RIGHT    "\x1b[%dB"
 #define CURSOR_TO_BOTTOM   "\x1b[%dC"
@@ -127,7 +127,7 @@ int main()
 
 		clear_screen();
 		move_snake(snake, board, dir);
-		usleep(1000 * 1000 / FPS);
+		usleep(5000 * 1000/ FPS);
 	} while (!should_end_game(snake, board));
 
 	pthread_kill(cmd_thread_id, SIGINT);
