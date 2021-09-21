@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -8,6 +9,7 @@ struct Board{
 	int width;
 	char *board;
 	int *empty_spaces;
+	int has_apple;
 };
 
 void
@@ -88,7 +90,40 @@ show_board(struct Board *b)
 void
 board_drop_apple(struct Board *b)
 {
-	(void) b;
+	char *board = board_get_board(b);
+	srand(time(NULL));
+	int r = rand() % (board_get_width(b) * board_get_height(b));
+	int apple_dropped = 0;
+
+	while (!apple_dropped) {
+		if (board[r] == BLANK) {
+			board[r] = APPLE;
+			apple_dropped = 1;
+		} else {
+			r = rand() % (board_get_width(b) * board_get_height(b));
+		}
+	}
+	board_set_has_apple(b, 1);
+}
+
+int
+board_get_has_apple(struct Board *b)
+{
+	return b->has_apple;
+}
+
+void
+board_set_has_apple(struct Board *b, int a)
+{
+	b->has_apple = a;
+}
+
+void
+board_clear(struct Board *b)
+{
+	char *p = b->board;
+	int n=b->height*b->width;
+	while (n) p[n--] = BLANK;
 }
 
 struct Board *
@@ -100,9 +135,7 @@ new_board(int height, int width)
 	b->board = malloc(sizeof(char) * height * width);
 
 	// clear board
-	char *p = b->board;
-	int n=height*width;
-	while (n) p[n--] = BLANK;
+	board_clear(b);
 
 	b->empty_spaces = malloc(sizeof(char) * height * width);
 	return b;
