@@ -148,7 +148,6 @@ new_snake(struct Board *b)
 	int height = board_get_height(b);
 
 	/* snake stars at random position */
-	srand(time(NULL));
 	do {
 		x = (rand() %  (width/2)) + width/4;
  		y = (rand() % (height/2)) + height/4;

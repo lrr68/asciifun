@@ -2,13 +2,28 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <ncurses.h>
+#include <errno.h>
+#include <string.h>
+#include <signal.h>
 
 #include "./pixel.h"
 #include "./board.h"
 #include "./snake.h"
 
 #define FPS 6
+#define CURSOR_TO_TOP      "\x1b[%dA"
+#define CURSOR_TO_RIGHT    "\x1b[%dB"
+#define CURSOR_TO_BOTTOM   "\x1b[%dC"
+#define CURSOR_TO_LEFT     "\x1b[%dD"
+#define HIDE_CURSOR        "\x1b[?25l"
+#define SHOW_CURSOR        "\x1b[?25h"
 
+/* GLOBAL VARIABLES */
+Direction dir;
+
+/* FUNCTION DEFINITIONS */
 int
 should_end_game(Snake *s, Board *b)
 {
@@ -22,33 +37,87 @@ should_end_game(Snake *s, Board *b)
 void
 clear_screen()
 {
-	printf("\x1b[%dD", WIDTH);
-	printf("\x1b[%dA", HEIGHT);
+	printf(CURSOR_TO_LEFT, WIDTH);
+	printf(CURSOR_TO_TOP, HEIGHT);
 }
 
 void
 show_cursor(int show)
 {
   if (show)
-    fputs("\x1b[?25h", stdout);
+	  fputs(SHOW_CURSOR, stdout);
+	  //curs_set(1);
   else
-    fputs("\x1b[?25l", stdout);
+	  fputs(HIDE_CURSOR, stdout);
+	  //curs_set(0);
 }
+
 void
 end_game()
 {
-	printf("\x1b[%dB", WIDTH);
-	printf("\x1b[%dC", HEIGHT);
+	printf(CURSOR_TO_RIGHT, WIDTH);
+	printf(CURSOR_TO_BOTTOM, HEIGHT);
 	printf("GAME OVER\n");
+}
+
+void *
+get_cmd_thread()
+{
+	int c;
+	while (1) {
+		c = getc(stdin);
+
+		switch (c) {
+			case 'h':
+				dir = LEFT;
+				break;
+			case 'j':
+				dir = DOWN;
+				break;
+			case 'k':
+				dir = UP;
+				break;
+			case 'l':
+				dir = RIGHT;
+				break;
+		}
+	}
+}
+
+void
+init_game(Board *b, Snake *s)
+{
+	/* start ncurses
+	if (initscr() == NULL) {
+		perror(strerror(errno));
+		exit(errno);
+	}     */
+
+	raw();
+	show_cursor(0);
+	place_snake(s, b);
+}
+
+void
+housekeeping(Board *b, Snake *s)
+{
+	destroy_board(b);
+	destroy_snake(s);
+	end_game();
+	show_cursor(1);
 }
 
 int main()
 {
+	srand(time(NULL));
+	dir = rand() % COUNT_DIR;
 	Board *board = new_board(HEIGHT, WIDTH);
 	Snake *snake = new_snake(board);
-	Direction dir = rand() % COUNT_DIR;
-	show_cursor(0);
-	place_snake(snake, board);
+	pthread_t cmd_thread_id;
+
+	init_game(board, snake);
+
+	pthread_create(&cmd_thread_id, NULL, get_cmd_thread, NULL);
 
 	do {
 		if (!board_get_has_apple(board))
@@ -61,9 +130,8 @@ int main()
 		usleep(1000 * 1000 / FPS);
 	} while (!should_end_game(snake, board));
 
-	destroy_board(board);
-	end_game();
-	show_cursor(1);
+	pthread_kill(cmd_thread_id, SIGINT);
+	housekeeping(board, snake);
 
 	return 0;
 }

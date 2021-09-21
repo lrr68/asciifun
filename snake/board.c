@@ -91,7 +91,6 @@ void
 board_drop_apple(struct Board *b)
 {
 	char *board = board_get_board(b);
-	srand(time(NULL));
 	int r = rand() % (board_get_width(b) * board_get_height(b));
 	int apple_dropped = 0;
 
