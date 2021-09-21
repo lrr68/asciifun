@@ -1,8 +1,14 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#define HEIGHT 30
-#define WIDTH  30
+#define HEIGHT 31
+#define WIDTH  31
+
+#define BOARD_CORNER '+'
+#define BOARD_LIMIT_H '-'
+#define BOARD_LIMIT_V '|'
+
+#define BLANK ' '
 
 typedef struct Board Board;
 

@@ -1,19 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "./snake.h"
+#include "./pixel.h"
 #include "./board.h"
+#include "./snake.h"
 
 int
 should_end_game(Snake *s, Board *b)
 {
 	if (snake_get_size(s) == board_get_size(b))
 		return 1;
-	else if (snake_is_dead(s))
+	else if (snake_is_dead(s, b))
 		return 1;
 	return 0;
 }
-
 
 int main()
 {
@@ -21,6 +21,7 @@ int main()
 	Board *board = new_board(HEIGHT, WIDTH);
 
 	do {
+		place_snake(snake, board);
 		board_drop_apple(board);
 		show_board(board);
 

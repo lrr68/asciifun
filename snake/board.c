@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "./board.h"
+
 struct Board{
 	int height;
 	int width;
@@ -67,7 +69,17 @@ show_board(struct Board *b)
 
 	for (int y=0; y<height; ++y) {
 		for (int x=0; x<width; ++x) {
-			printf(" %d", board[y * width + x]);
+			/* print board limits */
+			if ((x==0 && y==0) || (x==width-1 && y==height-1)
+					|| (x==width-1 && y==0) || (x==0 && y==height-1)) {
+				printf(" %c", BOARD_CORNER);
+			} else if (y == 0 || y == height-1) {
+				printf(" %c", BOARD_LIMIT_H);
+			} else if (x == 0 || x == width-1) {
+				printf(" %c", BOARD_LIMIT_V);
+			} else {
+				printf(" %c", board[y * width + x]);
+			}
 		}
 		printf("\n");
 	}
@@ -86,6 +98,12 @@ new_board(int height, int width)
 	board_set_height(b, height);
 	board_set_width(b, width);
 	b->board = malloc(sizeof(char) * height * width);
+
+	// clear board
+	char *p = b->board;
+	int n=height*width;
+	while (n) p[n--] = BLANK;
+
 	b->empty_spaces = malloc(sizeof(char) * height * width);
 	return b;
 }
