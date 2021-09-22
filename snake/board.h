@@ -1,8 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#define HEIGHT 31
-#define WIDTH  31
+#define HEIGHT 28
+#define WIDTH  28
 
 #define BOARD_CORNER '+'
 #define BOARD_LIMIT_H '-'
@@ -22,7 +22,7 @@ char *board_get_board(struct Board *b);
 void destroy_board(struct Board *b);
 int board_get_has_apple(struct Board *b);
 void board_set_has_apple(struct Board *b, int a);
-void show_board(struct Board *b);
+void show_board(struct Board *b, WINDOW *w);
 void board_drop_apple(struct Board *b);
 void board_clear(struct Board *b);
 struct Board *new_board(int height, int width);

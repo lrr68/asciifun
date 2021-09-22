@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 #include "./pixel.h"
 #include "./board.h"
@@ -116,7 +117,9 @@ move_snake(struct Snake *s, Board *b, Direction d)
 		case RIGHT:
 			dx = +1;
 			break;
-		default: //nothing to do
+		default:
+			//endgame
+			s->dead = 1;
 			break;
 	}
 	new_head = new_pixel(pixel_get_x(old_head) + dx, pixel_get_y(old_head) + dy);

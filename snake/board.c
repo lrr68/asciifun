@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 
 #include "./board.h"
 
@@ -63,7 +64,7 @@ destroy_board(struct Board *b)
 }
 
 void
-show_board(struct Board *b)
+show_board(struct Board *b, WINDOW *w)
 {
 	int height = board_get_height(b);
 	int width = board_get_width(b);
@@ -71,19 +72,9 @@ show_board(struct Board *b)
 
 	for (int y=0; y<height; ++y) {
 		for (int x=0; x<width; ++x) {
-			/* print board limits */
-			if ((x==0 && y==0) || (x==width-1 && y==height-1)
-					|| (x==width-1 && y==0) || (x==0 && y==height-1)) {
-				printf(" %c", BOARD_CORNER);
-			} else if (y == 0 || y == height-1) {
-				printf(" %c", BOARD_LIMIT_H);
-			} else if (x == 0 || x == width-1) {
-				printf(" %c", BOARD_LIMIT_V);
-			} else {
-				printf(" %c", board[y * width + x]);
-			}
+			/* window is bigger than board by 2 */
+			mvwprintw(w,y+1, x+1, "%c", board[y * width + x] );
 		}
-		printf("\n");
 	}
 }
 

@@ -12,7 +12,7 @@
 #include "./board.h"
 #include "./snake.h"
 
-#define FPS 15
+#define FPS 10
 #define CURSOR_TO_TOP      "\x1b[%dA"
 #define CURSOR_TO_RIGHT    "\x1b[%dB"
 #define CURSOR_TO_BOTTOM   "\x1b[%dC"
@@ -22,6 +22,7 @@
 
 /* GLOBAL VARIABLES */
 Direction dir;
+WINDOW *game_w;
 
 /* FUNCTION DEFINITIONS */
 int
@@ -45,11 +46,23 @@ void
 show_cursor(int show)
 {
   if (show)
-	  fputs(SHOW_CURSOR, stdout);
-	  //curs_set(1);
+	  curs_set(1);
   else
-	  fputs(HIDE_CURSOR, stdout);
-	  //curs_set(0);
+	  curs_set(0);
+}
+
+WINDOW *
+create_new_win(int height, int width, int start_y, int start_x)
+{
+	WINDOW *local_win;
+
+	local_win = newwin(height, width, start_y, start_x);
+
+	/* use default caracters for borders */
+	box(local_win, 0 , 0);
+	wrefresh(local_win);
+
+	return local_win;
 }
 
 void
@@ -65,7 +78,7 @@ get_cmd_thread()
 {
 	int c;
 	while (1) {
-		c = getc(stdin);
+		c = wgetch(game_w);
 
 		switch (c) {
 			case 'h':
@@ -80,6 +93,8 @@ get_cmd_thread()
 			case 'l':
 				dir = RIGHT;
 				break;
+			case 'q':
+				dir = COUNT_DIR;
 		}
 	}
 }
@@ -87,13 +102,14 @@ get_cmd_thread()
 void
 init_game(Board *b, Snake *s)
 {
-	/* start ncurses
+	/* start ncurses     */
 	if (initscr() == NULL) {
 		perror(strerror(errno));
 		exit(errno);
-	}     */
+	}
 
 	raw();
+	noecho();
 	show_cursor(0);
 	place_snake(s, b);
 }
@@ -105,6 +121,8 @@ housekeeping(Board *b, Snake *s)
 	destroy_snake(s);
 	end_game();
 	show_cursor(1);
+	echo();
+	endwin();
 }
 
 int main()
@@ -116,22 +134,29 @@ int main()
 	pthread_t cmd_thread_id;
 
 	init_game(board, snake);
-
+	game_w = create_new_win(HEIGHT+2, WIDTH+2, 0, 0);
 	pthread_create(&cmd_thread_id, NULL, get_cmd_thread, NULL);
 
 	do {
+		wrefresh(game_w);
+
 		if (!board_get_has_apple(board))
 			board_drop_apple(board);
 
-		show_board(board);
-
+		show_board(board, game_w);
+		doupdate();
 		clear_screen();
 		move_snake(snake, board, dir);
-		usleep(5000 * 1000/ FPS);
+
+		/* terminal ratio makes movement on y be 2x faster */
+		if (dir == UP || dir == DOWN)
+			usleep(2000000/ FPS);
+		else
+			usleep(1000000/ FPS);
 	} while (!should_end_game(snake, board));
 
-	pthread_kill(cmd_thread_id, SIGINT);
 	housekeeping(board, snake);
+	pthread_kill(cmd_thread_id, SIGINT);
 
 	return 0;
 }
