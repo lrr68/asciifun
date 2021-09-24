@@ -36,13 +36,6 @@ should_end_game(Snake *s, Board *b)
 }
 
 void
-clear_screen()
-{
-	printf(CURSOR_TO_LEFT, WIDTH);
-	printf(CURSOR_TO_TOP, HEIGHT);
-}
-
-void
 show_cursor(int show)
 {
   if (show)
@@ -145,7 +138,6 @@ int main()
 
 		show_board(board, game_w);
 		doupdate();
-		clear_screen();
 		move_snake(snake, board, dir);
 
 		/* terminal ratio makes movement on y be 2x faster */
