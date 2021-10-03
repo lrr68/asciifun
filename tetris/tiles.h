@@ -34,7 +34,7 @@ TileType random_tiletype();
 void destroy_tile(struct Tile *t);
 void move_tile(struct Tile *t, Board *b, int offset);
 void lower_tile(struct Tile *t, Board *b);
-void rotate_tile(struct Tile *t);
+void rotate_tile(struct Tile *t, Board *b);
 void show_or_hide_tile(struct Tile *t, Board *b, int show);
 
 #endif

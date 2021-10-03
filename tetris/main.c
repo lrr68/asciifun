@@ -62,7 +62,7 @@ get_cmd_thread()
 		switch (c) {
 			case 'k':
 			case 'j':
-				rotate_tile(cur_tile);
+				rotate_tile(cur_tile, board);
 				break;
 			case 'l':
 				move_tile(cur_tile, board, 1);

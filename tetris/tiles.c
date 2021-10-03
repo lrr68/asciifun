@@ -6,6 +6,7 @@
 
 struct Tile {
 	int positions[TILESIZE];
+	TileType type;
 };
 
 struct Tile *
@@ -13,6 +14,7 @@ new_tile(TileType p)
 {
 	int x = WIDTH/2;
 	struct Tile *t = malloc(sizeof(struct Tile));
+	t->type = p;
 
 	switch (p) {
 		case TILE_T:
@@ -170,7 +172,54 @@ show_or_hide_tile(struct Tile *t, Board *b, int show)
 }
 
 void
-rotate_tile(struct Tile *t)
+rotate_tile(struct Tile *t, Board *b)
 {
-	(void) t;
+	char *board = board_get_board(b);
+	int new_positions[TILESIZE] = {0};
+	switch (t->type) {
+		case TILE_T:
+			t->positions[0] = 0;
+			t->positions[1] = WIDTH+0-1;
+			t->positions[2] = WIDTH+0;
+			t->positions[3] = WIDTH+0+1;
+			break;
+		case TILE_I:
+			t->positions[0] = 0;
+			t->positions[1] = 0-1;
+			t->positions[2] = 0+1;
+			t->positions[3] = 0+2;
+			break;
+		case TILE_LR:
+			t->positions[0] = 0;
+			t->positions[1] = WIDTH+0-1;
+			t->positions[2] = 0-1;
+			t->positions[3] = 0+1;
+			break;
+		case TILE_LL:
+			t->positions[0] = 0;
+			t->positions[1] = 0-1;
+			t->positions[2] = 0+1;
+			t->positions[3] = WIDTH+0+1;
+			break;
+		case TILE_SQ:
+			t->positions[0] = 0;
+			t->positions[1] = WIDTH+0;
+			t->positions[2] = 0+1;
+			t->positions[3] = WIDTH+0+1;
+			break;
+		case TILE_ZR:
+			t->positions[0] = 0-1;
+			t->positions[1] = WIDTH+0;
+			t->positions[2] = 0;
+			t->positions[3] = WIDTH+0+1;
+			break;
+		case TILE_ZL:
+			t->positions[0] = 0;
+			t->positions[1] = 0+1;
+			t->positions[2] = WIDTH+0;
+			t->positions[3] = WIDTH+0-1;
+			break;
+		default:
+			break;
+	}
 }
